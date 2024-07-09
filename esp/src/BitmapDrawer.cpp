@@ -1,6 +1,6 @@
 #include <BitmapDrawer.h>
 
-BitmapDrawer::BitmapDrawer(Reader &reader) : reader(reader)
+BitmapDrawer::BitmapDrawer(Reader &reader, Display &display) : reader(reader), display(display)
 {
     bmpHeader = new BMPHeader();
 }
@@ -25,6 +25,16 @@ boolean BitmapDrawer::parseBMPHeader()
     bmpHeader->planes = reader.read16();
     bmpHeader->depth = reader.read16(); // bits per pixel
     bmpHeader->format = reader.read32();
+    reader.read32(); // image size
+    reader.read32(); // horizontal ppm
+    reader.read32(); // vertical ppm
+    reader.read32(); // vertical ppm
+    bmpHeader->numPaletteColors = reader.read32();
+    if (bmpHeader->numPaletteColors == 0)
+    {
+        bmpHeader->numPaletteColors = (1 << bmpHeader->depth); // 2^depth
+    }
+    reader.read32(); // num important colors
     bmpHeader->flip = (bmpHeader->height < 0) ? false : true;
     bmpHeader->rowSize = (bmpHeader->width * bmpHeader->depth / 8 + 3) & ~3;
     if (bmpHeader->depth < 8)
@@ -40,10 +50,16 @@ boolean BitmapDrawer::parseBMPHeader()
     Serial.println(bmpHeader->headerSize);
     Serial.print("Bit Depth: ");
     Serial.println(bmpHeader->depth);
+    Serial.print("Num colors in palette: ");
+    Serial.println(bmpHeader->numPaletteColors);
+    Serial.print("Image flipped?: ");
+    Serial.println(bmpHeader->flip ? "yes" : "no");
     Serial.print("Image size: ");
     Serial.print(bmpHeader->width);
     Serial.print('x');
     Serial.println(bmpHeader->height);
+    Serial.print("Row size: ");
+    Serial.println(bmpHeader->rowSize);
 
     return ((bmpHeader->planes == 1) && ((bmpHeader->format == 0) || (bmpHeader->format == 3)));
 }
@@ -54,7 +70,7 @@ boolean BitmapDrawer::parseColorPalette()
     {
         return true;
     }
-    const size_t paletteStartPos = bmpHeader->imageOffset - (4 << bmpHeader->depth);
+    const size_t paletteStartPos = bmpHeader->imageOffset - 4 * bmpHeader->numPaletteColors;
     if (reader.getPos() != paletteStartPos)
     {
         if (!reader.seek(paletteStartPos))
@@ -62,10 +78,20 @@ boolean BitmapDrawer::parseColorPalette()
     }
 
     uint16_t red, green, blue;
-    size_t maxNumColors = (1 << bmpHeader->depth); // 2^depth
-    for (size_t idx = 0; idx < maxNumColors; idx++)
+    for (size_t idx = 0; idx < bmpHeader->numPaletteColors; idx++)
     {
-        colorPalette[idx] = reader.read32();
+        blue = reader.read();
+        green = reader.read();
+        red = reader.read();
+        reader.read();
+
+        colorPalette[idx] = ((red << 16) | (green << 8) | blue);
+        Serial.print("Palette color for idx ");
+        Serial.print(idx);
+        Serial.print(": ");
+        char hex[7] = {0};
+        sprintf(hex, "#%02X%02X%02X", red, green, blue); // convert to an hexadecimal string. Lookup sprintf for what %02X means.
+        Serial.println(hex);
     }
     return true;
 }
@@ -73,35 +99,42 @@ boolean BitmapDrawer::parseColorPalette()
 uint32_t BitmapDrawer::readRgb888Color()
 {
     uint32_t color;
+    uint8_t r, g, b;
     switch (bmpHeader->depth)
     {
     case 32:
-        color = reader.read32();
+        b = reader.read();
+        g = reader.read();
+        r = reader.read();
+        reader.read();
+        color = ((r << 16) | (g << 8) | b);
         break;
     case 24:
-        uint8_t r = reader.read();
-        uint8_t g = reader.read();
-        uint8_t b = reader.read();
+        b = reader.read();
+        g = reader.read();
+        r = reader.read();
         color = ((r << 16) | (g << 8) | b);
         break;
     case 16:
+    {
         uint8_t lsb = reader.read();
         uint8_t msb = reader.read();
         if (bmpHeader->format == 0) // 555
         {
-            uint8_t r = (msb & 0x7C) << 1;
-            uint8_t g = ((msb & 0x03) << 6) | ((lsb & 0xE0) >> 2);
-            uint8_t b = (lsb & 0x1F) << 3;
+            r = (msb & 0x7C) << 1;
+            g = ((msb & 0x03) << 6) | ((lsb & 0xE0) >> 2);
+            b = (lsb & 0x1F) << 3;
             color = ((r << 16) | (g << 8) | b);
         }
         else // 565
         {
-            uint8_t r = (msb & 0xF8);
-            uint8_t g = ((msb & 0x07) << 5) | ((lsb & 0xE0) >> 3);
-            uint8_t b = (lsb & 0x1F) << 3;
+            r = (msb & 0xF8);
+            g = ((msb & 0x07) << 5) | ((lsb & 0xE0) >> 3);
+            b = (lsb & 0x1F) << 3;
             color = ((r << 8) | (g << 3) | (b >> 3));
         }
-        break;
+    }
+    break;
     default:
         color = 0; // invalid depth
         break;
@@ -112,35 +145,38 @@ uint32_t BitmapDrawer::readRgb888Color()
 uint32_t BitmapDrawer::readPaletteColor(uint8_t currentByte, size_t columnIndex)
 {
     uint32_t color;
+    uint8_t paletteIndex;
+
     switch (bmpHeader->depth)
     {
     case 1:
-        color = (currentByte & (0x01 << (7 - (columnIndex % 8)))) ? colorPalette[1] : colorPalette[0];
+        paletteIndex = (currentByte >> (7 - (columnIndex & 7))) & 0x1;
         break;
     case 2:
-        color = colorPalette[(currentByte >> ((3 - (columnIndex % 4)) * 2)) & 0x03];
+        paletteIndex = (currentByte >> (6 - ((columnIndex & 3) * 2))) & 0x3;
         break;
     case 4:
-        color = colorPalette[(currentByte >> ((1 - (columnIndex % 2)) * 4)) & 0x0F];
+        paletteIndex = (currentByte >> (4 - ((columnIndex & 1) * 4))) & 0xF;
         break;
     case 8:
-        color = colorPalette[currentByte];
+        paletteIndex = currentByte;
         break;
     default:
-        color = 0; // invalid depth
-        break;
+        // Handle error: unsupported depth
+        return 0;
     }
+
+    // Serial.println(paletteIndex);
+    color = colorPalette[paletteIndex];
     return color;
 }
 
 uint16_t BitmapDrawer::getColorToDraw(uint32_t rgb888, boolean withColors)
 {
-    bool has_multicolors = ((display.epd2.panel == GxEPD2::ACeP730) || display.epd2.panel == GxEPD2::ACeP565) || (display.epd2.panel == GxEPD2::GDEY073D46);
-
     if (bmpHeader->depth == 1)
         withColors = false;
 
-    if (withColors && has_multicolors)
+    if (withColors && display.hasMultiColors)
     {
         return rgb888ToRgb565(rgb888);
     }
@@ -158,9 +194,29 @@ uint16_t BitmapDrawer::getColorToDraw(uint32_t rgb888, boolean withColors)
     }
 }
 
+size_t BitmapDrawer::getRowPos(size_t rowIndex)
+{
+    return bmpHeader->flip ? bmpHeader->imageOffset + (bmpHeader->height - rowIndex - 1) * bmpHeader->rowSize : bmpHeader->imageOffset + rowIndex * bmpHeader->rowSize;
+}
+
 void BitmapDrawer::drawRow(size_t rowIndex)
 {
-    const size_t rowStartPos = bmpHeader->flip ? bmpHeader->imageOffset + (bmpHeader->height - rowIndex + 1) * bmpHeader->rowSize : bmpHeader->imageOffset + rowIndex * bmpHeader->rowSize;
+    // if (rowIndex % 10 == 0)
+    //{
+    //     Serial.println();
+    //     Serial.print("Drawing row ");
+    //     Serial.println(rowIndex + 1);
+    //     Serial.print("Index: ");
+    //     Serial.println(getRowPos(rowIndex));
+    //     Serial.print("Rows offset: ");
+    //     Serial.println(bmpHeader->height - rowIndex);
+    //     Serial.print("Target offset: ");
+    //     Serial.println(getRowPos(rowIndex));
+    //     Serial.print("Current pos: ");
+    //     Serial.println(reader.getPos());
+    //     Serial.println();
+    // }
+    const size_t rowStartPos = getRowPos(rowIndex);
     const size_t rowEndPos = rowStartPos + bmpHeader->rowSize;
     if (reader.getPos() != rowStartPos)
     {
@@ -172,7 +228,7 @@ void BitmapDrawer::drawRow(size_t rowIndex)
         reader.seek(rowStartPos);
     }
 
-    for (size_t colIndex = 0; colIndex < actualWidth; colIndex++)
+    for (size_t colIndex = 0; colIndex < bmpHeader->width; colIndex++)
     {
         uint32_t color;
         uint8_t currentByte;
@@ -188,11 +244,19 @@ void BitmapDrawer::drawRow(size_t rowIndex)
             }
             color = readPaletteColor(currentByte, colIndex);
         }
-
-        display.drawPixel(rowIndex, colIndex, getColorToDraw(color));
+        display.drawPixel(colIndex, rowIndex, getColorToDraw(color));
     }
 
     // Skip remaining bytes
+    // if (reader.getPos() < rowEndPos)
+    //{
+    //    Serial.print("We need to skip ");
+    //    Serial.print(rowEndPos - reader.getPos());
+    //    Serial.print(" bytes. We are at byte ");
+    //    Serial.print(reader.getPos());
+    //    Serial.print(" and need to arrive at byte ");
+    //    Serial.println(rowEndPos);
+    //}
     while (reader.getPos() < rowEndPos)
     {
         reader.read();
@@ -201,8 +265,50 @@ void BitmapDrawer::drawRow(size_t rowIndex)
 
 void BitmapDrawer::drawBitmap(int16_t x, int16_t y)
 {
-    actualWidth = min(bmpHeader->width, static_cast<uint32_t>(display.width() - x));
-    actualHeight = min(bmpHeader->height, static_cast<int32_t>(display.height() - y));
+    uint32_t startTime = millis();
+    actualWidth = min(bmpHeader->width, static_cast<uint32_t>(display.width - x));
+    actualHeight = min(bmpHeader->height, static_cast<int32_t>(display.height - y));
+    Serial.print("Actual width: ");
+    Serial.println(actualWidth);
+    Serial.print("Actual height: ");
+    Serial.println(actualHeight);
+
+    Serial.println("Parsing header");
+    parseBMPHeader();
+
+    Serial.println("Parsing palette");
+    parseColorPalette();
+
+    Serial.println("Resetting display");
+    display.reset();
+
+    size_t pageStartRow;
+    size_t pageEndRow;
+    size_t startPos;
+    do
+    {
+        size_t pageHeight = display.getPageHeight();
+        pageEndRow = pageStartRow + pageHeight - 1;
+
+        if (bmpHeader->flip)
+        {
+            for (size_t rowIndex = pageEndRow; rowIndex > pageStartRow; rowIndex--)
+            {
+                drawRow(rowIndex);
+            }
+            drawRow(pageStartRow);
+        }
+        else
+        {
+            reader.seek(getRowPos(pageStartRow));
+            for (size_t rowIndex = pageStartRow; rowIndex <= pageEndRow; rowIndex++)
+            {
+                drawRow(rowIndex);
+            }
+        }
+
+        pageStartRow += pageHeight;
+    } while (display.nextPage());
 }
 
 uint16_t rgb888ToRgb565(uint32_t rgb888)

@@ -16,6 +16,7 @@ struct BMPHeader
     uint32_t format;
     bool flip;
     uint32_t rowSize;
+    uint32_t numPaletteColors;
 };
 
 class BitmapDrawer
@@ -23,6 +24,7 @@ class BitmapDrawer
 private:
     static const uint16_t max_palette_pixels = 256;
     Reader &reader;
+    Display &display;
     BMPHeader *bmpHeader;
     size_t actualHeight = 0;
     size_t actualWidth = 0;
@@ -33,11 +35,11 @@ private:
     uint32_t readRgb888Color();
     uint32_t readPaletteColor(uint8_t currentByte, size_t index);
     uint16_t getColorToDraw(uint32_t rgb888, boolean withColor = true);
+    size_t getRowPos(size_t rowIndex);
     void drawRow(size_t rowIndex);
 
 public:
-    BitmapDrawer(Reader &reader);
-    ~BitmapDrawer();
+    BitmapDrawer(Reader &reader, Display &display);
     void drawBitmap(int16_t x = 0, int16_t y = 0);
 };
 

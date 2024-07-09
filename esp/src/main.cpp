@@ -4,6 +4,7 @@
 #include <config.h>
 #include <network.h>
 #include <display.h>
+#include <BitmapDrawer.h>
 #include <filesystem.h>
 #include <BufferedWifiClientReader.h>
 #include <Reader.h>
@@ -42,40 +43,21 @@ void setup()
   connectToWiFi(*config);
 
   //BufferedWifiClientReader client("192.168.0.10", 3001, "/matteo3.bmp", 1024);
-  Serial.println("Downloading image.");
-  if (!downloadFile("192.168.0.10", 3001, "/matteo3.bmp", "/image.bmp", fs))
-  {
-   Serial.println("Could not download image.");
-   return;
-  };
+  //Serial.println("Downloading image.");
+  //if (!downloadFile("192.168.0.10", 3001, "/matteo3.bmp", "/image.bmp", fs))
+  //{
+  // Serial.println("Could not download image.");
+  // return;
+  //};
   Serial.println("Initializing display.");
-  initDisplay();
-  int totalHeight = display.height();
-  int pageHeight = display.pageHeight();
-  int numPages = display.pages();
-
-  Serial.println("Display infos:");
-  Serial.print("Total height:");
-  Serial.println(totalHeight);
-  Serial.print("Num pages:");
-  Serial.println(numPages);
-  Serial.print("Page height:");
-  Serial.println(pageHeight);
-
-
-  for (int i = 0; i < numPages; i++)
-  {
-    int pageHeightToPrint = (i == numPages - 1) ? totalHeight % pageHeight : pageHeight;
-    Serial.print("Page number: ");
-    Serial.print(i + 1);
-    Serial.print(", Page height: ");
-    Serial.println(pageHeightToPrint);
-  }
+  Display *display = new Display();
+  display->initDisplay();
 
   Serial.println("Displaying image.");
-  FileSystemReader reader(fs, "/image.bmp");
-  //BufferedWifiClientReader reader("192.168.0.10", 3001, "/matteo3.bmp", 128);
-  drawBitmapFromSpiffs_Buffered(reader);
+  //FileSystemReader reader(fs, "/image.bmp");
+  BufferedWifiClientReader reader("192.168.0.10", 3001, "/matteo3.bmp", 2048);
+  BitmapDrawer drawer(reader, *display);
+  drawer.drawBitmap();
   // fs.removeFile("/image.bmp");
 }
 

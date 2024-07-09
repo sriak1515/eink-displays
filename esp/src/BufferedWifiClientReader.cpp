@@ -36,11 +36,11 @@ bool BufferedWifiClientReader::connect()
         }
     }
 
-    if (ok && contentLength >= 0)
-    {
-        Serial.print("Content-Length: ");
-        Serial.println(contentLength);
-    }
+    //if (ok && contentLength >= 0)
+    //{
+    //    Serial.print("Content-Length: ");
+    //    Serial.println(contentLength);
+    //}
 
     return ok;
 }
@@ -77,14 +77,32 @@ uint8_t BufferedWifiClientReader::read()
 {
     if (bufferPos == bufferFill)
     {
-        size_t available = client->available();
-        size_t fetch = available <= bufferSize ? available : bufferSize;
-        bufferPos = 0;
-        bufferFill = client->read(buffer, fetch);
-        if (bufferFill == 0)
+        uint32_t start = millis();
+        while ((client->connected() || client->available()) && bufferPos == bufferFill)
         {
-            Serial.println("Tried to fetch more bytes than available");
-            throw std::runtime_error("Tried to fetch more bytes than available");
+            size_t available = client->available();
+            if (available)
+            {
+                size_t fetch = available <= bufferSize ? available : bufferSize;
+                bufferPos = 0;
+                bufferFill = client->read(buffer, fetch);
+                if (bufferFill == 0)
+                {
+                    Serial.println("Tried to fetch more bytes than available");
+                    throw std::runtime_error("Tried to fetch more bytes than available");
+                }
+            }
+            else
+            {
+                delay(1);
+            }
+            if (millis() - start > 2000)
+                break;
+        }
+        if (bufferPos == bufferFill)
+        {
+            Serial.println("Could not fetch more bytes before 2s timeout");
+            throw std::runtime_error("Could not fetch more bytes before 2s timeout");
         }
     }
     uint8_t data = buffer[bufferPos];
@@ -142,10 +160,10 @@ bool BufferedWifiClientReader::isConnectedAndavailable()
 
 boolean BufferedWifiClientReader::seek(size_t newPos)
 {
-    Serial.print("Seeking to pos ");
-    Serial.print(newPos);
-    Serial.print(" from pos ");
-    Serial.println(pos);
+    //Serial.print("Seeking to pos ");
+    //Serial.print(newPos);
+    //Serial.print(" from pos ");
+    //Serial.println(pos);
     if (newPos < 0)
     {
         Serial.println("Error: new position is negative");
@@ -159,9 +177,9 @@ boolean BufferedWifiClientReader::seek(size_t newPos)
             return false;
         }
     }
-    Serial.print("Skipping ");
-    Serial.print(newPos - pos);
-    Serial.println(" bytes");
+    //Serial.print("Skipping ");
+    //Serial.print(newPos - pos);
+    //Serial.println(" bytes");
     while (pos < newPos)
     {
         if (!client->available())
