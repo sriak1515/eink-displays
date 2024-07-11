@@ -34,7 +34,6 @@ boolean BitmapDrawer::parseBMPHeader()
     {
         bmpHeader->numPaletteColors = (1 << bmpHeader->depth); // 2^depth
     }
-    reader.read32(); // num important colors
     bmpHeader->flip = (bmpHeader->height < 0) ? false : true;
     bmpHeader->rowSize = (bmpHeader->width * bmpHeader->depth / 8 + 3) & ~3;
     if (bmpHeader->depth < 8)
@@ -222,7 +221,7 @@ void BitmapDrawer::drawRow(size_t rowIndex)
     {
         Serial.print("Warning, expected to be at position ");
         Serial.print(rowStartPos);
-        Serial.print(" but was a position ");
+        Serial.print(" but was at position ");
         Serial.print(reader.getPos());
         Serial.println(". Seeking to correct position");
         reader.seek(rowStartPos);
@@ -309,6 +308,9 @@ void BitmapDrawer::drawBitmap(int16_t x, int16_t y)
 
         pageStartRow += pageHeight;
     } while (display.nextPage());
+    Serial.print("Bitmap loaded in ");
+    Serial.print(millis() - startTime);
+    Serial.println(" ms");
 }
 
 uint16_t rgb888ToRgb565(uint32_t rgb888)

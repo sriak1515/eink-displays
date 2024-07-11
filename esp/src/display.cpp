@@ -14,7 +14,8 @@ Display::Display() : curPage(0)
 
 void Display::initDisplay()
 {
-  display.init(115200, true, 2, false);
+  display.init(115200, true, 10, false);
+  //display.init(115200, true, 2, false);
   reset();
   return;
 }

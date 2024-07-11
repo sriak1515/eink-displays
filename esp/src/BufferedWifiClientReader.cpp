@@ -96,13 +96,13 @@ uint8_t BufferedWifiClientReader::read()
             {
                 delay(1);
             }
-            if (millis() - start > 2000)
+            if (millis() - start > 5000)
                 break;
         }
         if (bufferPos == bufferFill)
         {
-            Serial.println("Could not fetch more bytes before 2s timeout");
-            throw std::runtime_error("Could not fetch more bytes before 2s timeout");
+            Serial.println("Could not fetch more bytes before 5s timeout");
+            throw std::runtime_error("Could not fetch more bytes before 5s timeout");
         }
     }
     uint8_t data = buffer[bufferPos];
