@@ -52,10 +52,12 @@ void setup()
   Serial.println("Initializing display.");
   Display *display = new Display();
   display->initDisplay();
+  display->clear();
 
   Serial.println("Displaying image.");
   //FileSystemReader reader(fs, "/image.bmp");
-  BufferedWifiClientReader reader("192.168.0.10", 3001, "/matteo3.bmp", 2048);
+  //BufferedWifiClientReader reader("192.168.0.10", 3001, "/matteo3.bmp", 2048);
+  BufferedWifiClientReader reader("192.168.0.10", 3001, "/matteo_indexed_4_small.bmp", 2048);
   BitmapDrawer drawer(reader, *display);
   drawer.drawBitmap();
   // fs.removeFile("/image.bmp");
