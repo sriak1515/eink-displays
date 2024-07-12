@@ -36,12 +36,6 @@ bool BufferedWifiClientReader::connect()
         }
     }
 
-    //if (ok && contentLength >= 0)
-    //{
-    //    Serial.print("Content-Length: ");
-    //    Serial.println(contentLength);
-    //}
-
     return ok;
 }
 
@@ -160,10 +154,6 @@ bool BufferedWifiClientReader::isConnectedAndavailable()
 
 boolean BufferedWifiClientReader::seek(size_t newPos)
 {
-    //Serial.print("Seeking to pos ");
-    //Serial.print(newPos);
-    //Serial.print(" from pos ");
-    //Serial.println(pos);
     if (newPos < 0)
     {
         Serial.println("Error: new position is negative");
@@ -177,16 +167,8 @@ boolean BufferedWifiClientReader::seek(size_t newPos)
             return false;
         }
     }
-    //Serial.print("Skipping ");
-    //Serial.print(newPos - pos);
-    //Serial.println(" bytes");
     while (pos < newPos)
     {
-        if (!client->available())
-        {
-            Serial.println("Error: tried to seek past end of file");
-            return false;
-        }
         read();
     }
     return true;
