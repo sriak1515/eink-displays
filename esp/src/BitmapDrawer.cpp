@@ -165,7 +165,6 @@ uint32_t BitmapDrawer::readPaletteColor(uint8_t currentByte, size_t columnIndex)
         return 0;
     }
 
-    // Serial.println(paletteIndex);
     color = colorPalette[paletteIndex];
     return color;
 }
@@ -200,21 +199,6 @@ size_t BitmapDrawer::getRowPos(size_t rowIndex)
 
 void BitmapDrawer::drawRow(size_t rowIndex)
 {
-    // if (rowIndex % 10 == 0)
-    //{
-    //     Serial.println();
-    //     Serial.print("Drawing row ");
-    //     Serial.println(rowIndex + 1);
-    //     Serial.print("Index: ");
-    //     Serial.println(getRowPos(rowIndex));
-    //     Serial.print("Rows offset: ");
-    //     Serial.println(bmpHeader->height - rowIndex);
-    //     Serial.print("Target offset: ");
-    //     Serial.println(getRowPos(rowIndex));
-    //     Serial.print("Current pos: ");
-    //     Serial.println(reader.getPos());
-    //     Serial.println();
-    // }
     const size_t rowStartPos = getRowPos(rowIndex);
     const size_t rowEndPos = rowStartPos + bmpHeader->rowSize;
     if (reader.getPos() != rowStartPos)
@@ -227,7 +211,7 @@ void BitmapDrawer::drawRow(size_t rowIndex)
         reader.seek(rowStartPos);
     }
 
-    for (size_t colIndex = 0; colIndex < bmpHeader->width; colIndex++)
+    for (size_t colIndex = 0; colIndex < actualWidth; colIndex++)
     {
         uint32_t color;
         uint8_t currentByte;
@@ -246,16 +230,6 @@ void BitmapDrawer::drawRow(size_t rowIndex)
         display.drawPixel(colIndex, rowIndex, getColorToDraw(color));
     }
 
-    // Skip remaining bytes
-    // if (reader.getPos() < rowEndPos)
-    //{
-    //    Serial.print("We need to skip ");
-    //    Serial.print(rowEndPos - reader.getPos());
-    //    Serial.print(" bytes. We are at byte ");
-    //    Serial.print(reader.getPos());
-    //    Serial.print(" and need to arrive at byte ");
-    //    Serial.println(rowEndPos);
-    //}
     while (reader.getPos() < rowEndPos)
     {
         reader.read();
@@ -265,6 +239,9 @@ void BitmapDrawer::drawRow(size_t rowIndex)
 void BitmapDrawer::drawBitmap(int16_t x, int16_t y)
 {
     uint32_t startTime = millis();
+    Serial.println("Parsing header");
+    parseBMPHeader();
+
     actualWidth = min(bmpHeader->width, static_cast<uint32_t>(display.width - x));
     actualHeight = min(bmpHeader->height, static_cast<int32_t>(display.height - y));
     Serial.print("Actual width: ");
@@ -272,25 +249,25 @@ void BitmapDrawer::drawBitmap(int16_t x, int16_t y)
     Serial.print("Actual height: ");
     Serial.println(actualHeight);
 
-    Serial.println("Parsing header");
-    parseBMPHeader();
-
     Serial.println("Parsing palette");
     parseColorPalette();
 
     Serial.println("Resetting display");
     display.reset();
 
-    size_t pageStartRow;
+    size_t pageStartRow = 0;
     size_t pageEndRow;
     size_t startPos;
     do
     {
         size_t pageHeight = display.getPageHeight();
-        pageEndRow = pageStartRow + pageHeight - 1;
+        pageEndRow = min(pageStartRow + pageHeight - 1, actualHeight - 1);
 
         if (bmpHeader->flip)
         {
+            Serial.println("Seeking.");
+            reader.seek(getRowPos(pageEndRow));
+            Serial.println("Start drawing.");
             for (size_t rowIndex = pageEndRow; rowIndex > pageStartRow; rowIndex--)
             {
                 drawRow(rowIndex);
