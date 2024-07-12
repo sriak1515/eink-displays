@@ -7,7 +7,7 @@ Display::Display() : curPage(0)
 {
   width = display.width();
   height = display.height();
-  hasMultiColors = ((display.epd2.panel == GxEPD2::ACeP730) || display.epd2.panel == GxEPD2::ACeP565) || (display.epd2.panel == GxEPD2::GDEY073D46);
+  hasMultiColors = ((display.epd2.panel == GxEPD2::ACeP730) || display.epd2.panel == GxEPD2::ACeP565) || (display.epd2.panel == GxEPD2::GDEY073D46) || (display.epd2.panel == GxEPD2::GDEM037F51);
   numPages = display.pages();
   pageHeight = display.pageHeight();
 }
