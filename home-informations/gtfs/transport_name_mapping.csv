@@ -1,0 +1,86 @@
+Abbreviation,DE,FR,IT,EN,Ref_TransportMode,route_type
+ASC,Aufzug,Ascenseur,Ascensore,Lift / Elevator,A,1700
+B,Bus,Autobus,Autobus,Bus,B,700
+BN,Nachtbus,Bus de nuit,Autobus notturno,Night Bus,B,705
+BP,PanoramaBus,Bus panoramique,PanoramaBus,Panorama Bus,B,710
+BUS,Bus,Autobus,Autobus,Bus,B,700
+CAR,Fernbus national,Bus longue distance national,Autobus nazionale a lunga percorrenza,National long-distance bus,B,202
+CAX,Fernbus international,Bus grandes lignes international,Autobus a lunga percorrenza internazionale,International long-distance bus,B,201
+EB,Eilbus,Bus express,Autobus espresso,Semi fast bus,B,702
+EXB,Expressbus,Expressbus,Expressbus,Express bus,B,702
+ICB,InterCity-Bus,Bus InterCity,Autobus InterCity,InterCity Bus,B,202
+KB,Kleinbus,Minibus,Furgoncino,Minibus,B,700
+NB,Nacht-Bus,Bus de nuit,Bus notturno,Night Bus,B,705
+NFB,Niederflur-Bus,Bus à plancher surbaissé,Bus a pianale ribassato,Low-floor bus,B,700
+NFO,Niederflur-Trolleybus,Trolleybus à plancher surbaissé,Filobus a pianale ribassato,Low-floor trolley bus,B,700
+RUB,Rufbus,Bus sur appel,Bus a chiamata,On-demand Bus,B,715
+TX,Taxi,Taxi,Tassì,Taxi,B,1500
+SL,Sesselbahn,Télésiège,Seggiovia,Chairlift,E,1300
+CC,Zahnradbahn,Chemin de fer à crémaillère,Ferrovia a cremagliera,Rack-railroad / Cog Railway,H,1400
+GB,Gondelbahn,Télécabine,Ovovia,Gondola lift,L,1300
+LB,Luftseilbahn,Téléphérique,Funivia,Cableway / Aerial Ropeway,L,1300
+PB,Pendelbahn,Téléphérique à mouvement de va-et-vient,Funivia a movimento va e vieni,Aerial Tramway,L,1300
+M,Metro,Métro,Metropolitana,Underground / Metro,M,401
+FUN,Standseilbahn,Funiculaire,Funicolare,Funicular,N,1400
+BAT,Schiff,Bateau,Battello,Ship / Boat,S,1000
+BAV,Dampfschiff,Bateau à vapeur,Battello a vapore,Steam ship / boat,S,1000
+FAE,Fähre,Traversier / Ferry,Nave traghetto,Ferry,S,1000
+KAT,Katamaran,Catamaran,Catamarano,Katamaran,S,1000
+NFT,Niederflur-Tram,Tram à plancher surbaissé,Tram a pianale ribassato,Low-floor Tramway,T,900
+T,Tram,Tram,Tram,Tram,T,900
+TN,Nachttram,Tram de nuit,Tram notturno,Night Tram,T,900
+AIR,Flugzeug,Avion,Velivolo,Airplane,U,1100
+UUU,Unbekannte Art,Espèce inconnue,Specie sconosciuta,Unknown mode,U,1700
+AG,Agenturzug,Train de l’agence,Treno d’agenzia,Agency Train,Z,117
+ARC,Arco, ARCO,ARCO,Arco,Z,102
+ARZ,Autoreisezug,Train d’autos accompagnées,Treno auto accompagnate,Car-carrying Train,Z,104
+AT,Autotunnelzug,Train-autos Tunnel,Treno per il trasporto di auto in galleria,Auto Tunnel Train,Z,104
+ATR,Altaria,Altaria,Altaria,Altaria,Z,102
+ATZ,Autotunnelzug,Train-autos Tunnel,Treno per il trasporto di auto in galleria,Auto Tunnel Train,Z,104
+AVE,Alta Velocidad ES,Alta Velocidad ES,Alta Velocidad ES,Alta Velocidad ES,Z,101
+BEX,Bernina Express,Bernina Express,Bernina Express,Bernina Express,Z,107
+CAT,City Airport Train,City Airport Train,Treno città-aeroporto,City Airport Train,Z,111
+CNL,CityNightLine,CityNightLine,CityNightLine,CityNightLine,Z,105
+D,Schnellzug,Train Express,Treno espresso,Fast Train,Z,103
+E,Eilzug,Train accéléré,Treno espresso,Semi fast / non-stop Train,Z,103
+EC,EuroCity,EuroCity,EuroCity,EuroCity,Z,102
+EM,Euromed,Euromed,Euromed,Euromed,Z,102
+EN,EuroNight,EuroNight,EuroNight,EuroNight,Z,105
+ES,Eurostar Italia,Eurostar Italia,Eurostar Italia,Eurostar Italia,Z,101
+EST,Eurostar,Eurostar,Eurostar,Eurostar,Z,101
+EXT,Extrazug,Train spécial,Treno speciale,Special Event Train,Z,117
+GEX,Glacier Express,Glacier Express,Glacier Express,Glacier Express,Z,107
+IC,InterCity,InterCity,InterCity,InterCity,Z,102
+ICE,InterCityExpress,InterCity-Express,InterCityExpress,InterCityExpress,Z,102
+ICN,IC-Neigezug,Train pendulaire IC,Treno basculante IC,IC Tilting Train,Z,102
+IN,InterCityNacht,Nuit InterCity,InterCityNight,InterCityNight,Z,102
+IR,InterRegio,InterRegio,InterRegio,InterRegio,Z,103
+IRE,Interregio-Express,InterregioExpress,Interregio-Express,Interregio-Express,Z,103
+IT,Italo,Italo,Italo,Italo,Z,102
+JAT,Gefängniszug,Train-prison,Treno della prigione,Jail / Prison Train,Z,111
+MAT,LeermaterialZug (Reisezugswagen),Train de matériel vide (voiture de voyageurs),Treno vuoto (carrozze passeggeri),Empty material train (passenger carriage),Z,111
+MP,LeermaterialZug Personenbeförd,Train de matériel vide Transport de personnes,Treno materiale vuoto Trasporto passeggeri,Empty material train with passenger transport,Z,111
+NJ,NightJet,NightJet,Nightjet,NightJet,Z,105
+NZ,Nacht-Zug,Train de nuit,Treno notturno,Night Train,Z,105
+P,Zug ohne Gewähr,Train non garanti,Treno senza garanzia,Train without Guarantee,Z,100
+PE,PanoramaExpress,PanoramaExpress,PanoramaExpress,PanoramaExpress,Z,107
+R,Regio,Train régional,Regio,Regio,Z,106
+RB,Regionalbahn,Réseau régional,Ferrovia regionale,Regional train,Z,106
+RE,RegioExpress,RegioExpress,RegioExpress,RegioExpress,Z,106
+RJ,Railjet,Railjet,Railjet,Railjet,Z,102
+RJX,railjet xpress,Railjet Xpress,Railjet Xpress,Railjet Xpress,Z,102
+S,S-Bahn,RER,Rete celere regionale,Urban Train,Z,109
+SN,Nacht-S-Bahn,RER de nuit,S-Bahn (rete celere regionale) notturna,Night-urban Train,Z,109
+STB,Stadtbahn,Chemin de fer urbain,Ferrovia urbana,City Railway,Z,109
+TAL,Talgo,Talgo,Talgo,Talgo,Z,101
+TER,Train Express Regional,Train Express régional,Treno espresso regionale,Train Express Regional,Z,106
+TE2,TER200,TER 200,TER200,TER200,Z,106
+TGV,Train à grande vitesse,Train à grande vitesse,Train à grande vitesse,Train à grande vitesse,Z,101
+THA,Thalys,Thalys,Thalys,Thalys,Z,101
+TLK,Twoje Linie Kolejowe,Deuxième Ligne Kolejowe,Linea Twoje Kolejowe,Twoje Line Kolejowe,Z,102
+UEX,UrlaubsExpress,UrlaubsExpress,HolidayExpress,UrlaubsExpress (Holiday),Z,104
+VAE,Voralpen-Express,Voralpen-Express,Voralpen-Express,Voralpen-Express,Z,103
+WB,Westbahn,Westbahn,Westbahn,Westbahn,Z,100
+X,InterConnex,InterConnex,InterConnex,InterConnex,Z,100
+X2,X2000 Neigezug,X2000 Train pendulaire,Treno inclinabile X2000,X2000 Tilting Train,Z,100
+ZUG,Zugskategorie unbekannt,Catégorie de train inconnue,Categoria del treno sconosciuta,Train Category Unknown,Z,100
