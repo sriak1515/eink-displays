@@ -1,4 +1,6 @@
+__pycache__
 env
-gtfs/data
+data
 config.json
 .idea
+secret.py
