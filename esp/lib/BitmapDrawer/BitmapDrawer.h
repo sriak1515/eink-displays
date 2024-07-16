@@ -1,7 +1,7 @@
 #ifndef BITMAP_DRAWER_H
 #define BITMAP_DRAWER_H
 
-#include <display.h>
+#include <Display.h>
 #include <Reader.h>
 
 struct BMPHeader

@@ -1,18 +1,19 @@
 #ifndef __FILESYSTEMREADER_H__
 #define __FILESYSTEMREADER_H__
 
+#include "FS.h"
+
 #include "Reader.h"
-#include "filesystem.h"
 
 class FileSystemReader : public Reader
 {
 private:
-    FileSystem &fs;
+    fs::FS &fs;
     File file;
     size_t pos;
 
 public:
-    FileSystemReader(FileSystem &fs, const char *filename);
+    FileSystemReader(fs::FS &fs, const char *filename);
     ~FileSystemReader();
     size_t getPos() override;
     uint8_t read() override;

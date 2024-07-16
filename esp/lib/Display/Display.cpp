@@ -1,6 +1,4 @@
-#include <FS.h>
-
-#include <display.h>
+#include <Display.h>
 #include <Reader.h>
 
 Display::Display() : curPage(0)

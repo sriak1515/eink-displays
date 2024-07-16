@@ -1,6 +1,6 @@
 #include "FileSystemReader.h"
 
-FileSystemReader::FileSystemReader(FileSystem &fs, const char *filename) : fs(fs), file(fs.openFile(filename, "r")), pos(0) {}
+FileSystemReader::FileSystemReader(fs::FS &fs, const char *filename) : fs(fs), file(fs.open(filename, "r")), pos(0) {}
 
 FileSystemReader::~FileSystemReader()
 {
