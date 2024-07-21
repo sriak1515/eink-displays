@@ -1,5 +1,4 @@
 #include <Renderer.h>
-#include <fonts/NimbusSanL_Reg.h>
 
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 
@@ -12,20 +11,33 @@ Renderer::Renderer(Display &display) : display(display)
     u8g2Fonts.setBackgroundColor(GxEPD_WHITE); // apply Adafruit GFX color
 }
 
-uint16_t Renderer::getStringWidth(const String &text)
+uint16_t Renderer::getStringWidth(const String &text, const uint8_t *font)
 {
+    u8g2Fonts.setFont(font);
     int16_t x1, y1;
     uint16_t w, h;
     display.display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
     return w;
 }
 
-uint16_t Renderer::getStringHeight(const String &text)
+uint16_t Renderer::getStringWidth(const String &text)
 {
+    return getStringWidth(text, defaultFont);
+}
+
+
+uint16_t Renderer::getStringHeight(const String &text, const uint8_t *font)
+{
+    u8g2Fonts.setFont(font);
     int16_t x1, y1;
     uint16_t w, h;
     display.display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
     return h;
+}
+
+uint16_t Renderer::getStringHeight(const String &text)
+{
+    return getStringHeight(text, defaultFont);
 }
 
 void Renderer::getStringBounds(Bounds &bounds, int16_t x, int16_t y, const String &text, const uint8_t *font, horizontal_alignment_t horizontal_alignment, vertical_alignment_t vertical_alignment)

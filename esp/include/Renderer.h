@@ -30,12 +30,14 @@ struct Bounds
 class Renderer
 {
 private:
-  Display &display;
   const uint8_t *defaultFont = u8g2_font_helvR14_tf;
 
 public:
+  Display &display;
   Renderer(Display &display);
+  uint16_t getStringWidth(const String &text, const uint8_t *font);
   uint16_t getStringWidth(const String &text);
+  uint16_t getStringHeight(const String &text, const uint8_t *font);
   uint16_t getStringHeight(const String &text);
   void drawString(int16_t x, int16_t y, const String &text, const uint8_t *font, uint16_t color = GxEPD_BLACK, horizontal_alignment_t horizontal_alignment = LEFT, vertical_alignment_t vertical_alignment = TOP);
   void drawString(int16_t x, int16_t y, const String &text, uint16_t color = GxEPD_BLACK, horizontal_alignment_t horizontal_alignment = LEFT, vertical_alignment_t vertical_alignment = TOP);

@@ -8,6 +8,7 @@
 //#if defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_7C
 #include <GxEPD2_7C.h>
 //#elif defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_3C
+#include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
 //#elif defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_4C
 #include <GxEPD2_4C.h>
@@ -31,7 +32,7 @@ class Display
 {
 
 public:
-    GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, GxEPD2_DRIVER_CLASS::HEIGHT> display = GxEPD2_DRIVER_CLASS(CS_PIN, DC_PIN, RST_PIN, BUSY_PIN);
+    GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS)> display = GxEPD2_DRIVER_CLASS(CS_PIN, DC_PIN, RST_PIN, BUSY_PIN);
     size_t height;
     size_t width;
     boolean hasMultiColors;
