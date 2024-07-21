@@ -45,5 +45,6 @@ public:
   void getStringBounds(Bounds &bounds, int16_t x, int16_t y, const String &text, horizontal_alignment_t horizontal_alignment = LEFT, vertical_alignment_t vertical_alignment = TOP);
   void drawCheckboard(const Bounds &bounds, uint16_t squareSize = 1, uint16_t color1 = GxEPD_WHITE, uint16_t color2 = GxEPD_BLACK);
   void drawBounds(const Bounds &bounds, uint16_t color = GxEPD_BLACK);
+  bool hasDescender(const String &text);
 };
 #endif

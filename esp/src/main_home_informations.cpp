@@ -3,7 +3,7 @@
 
 #include <wifi.h>
 #include <Display.h>
-#include <Timetable.h>
+#include <TimetableRenderer.h>
 #include <Renderer.h>
 #include <BitmapDrawer.h>
 #include <BufferedWifiClientReader.h>
@@ -24,7 +24,7 @@ void setup()
   Serial.println("Initializing display.");
   Display *display = new Display();
   display->initDisplay();
-  display->clear();
+  //display->clear();
 
   Serial.println("Displaying text.");
   display->display.setRotation(1);
@@ -52,18 +52,20 @@ void setup()
   Serial.print("  h: ");
   Serial.println(bounds->h);
 
+  timetable_t sampleTimetable;
+  sampleTimetable["Stop 1"].push_back(new TimetableEntry("1", "Destination 1", "10:00", ""));
+  sampleTimetable["Stop 1"].push_back(new TimetableEntry("2", "Destination 2", "10:15", "5"));
+  sampleTimetable["Stop 2"].push_back(new TimetableEntry("3", "Destination 3", "10:30", ""));
+  sampleTimetable["Stop 2"].push_back(new TimetableEntry("4", "Destination 4", "10:45", "10"));
+
   // Create a Timetable object
-  Timetable timetable(renderer);
+  TimetableRenderer timetable(renderer, sampleTimetable);
 
   // Create a sample timetable
-  std::map<String, std::vector<TimetableEntry>> sampleTimetable = {
-      {"Stop 1", {{"Line 1", "Destination 1", "10:00", "2"}, {"Line 2", "Destination 2", "10:15", "0"}, {"Line 3", "Destination 3", "10:30", "5"}}},
-      {"Stop 2", {{"Line 4", "Destination 4", "11:00", "0"}, {"Line 5", "Destination 5", "11:15", "3"}, {"Line 6", "Destination 6", "11:30", "1"}}}};
-
   // Draw the timetable at position (10, 10)
   do
   {
-    timetable.drawTimetable(0, 0, sampleTimetable);
+    timetable.drawTimetable(0, 0, 450, 300);
   } while (display->nextPage());
 
   // display->display.epd2.enableFastPartialMode();

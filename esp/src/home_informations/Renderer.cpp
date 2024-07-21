@@ -14,10 +14,7 @@ Renderer::Renderer(Display &display) : display(display)
 uint16_t Renderer::getStringWidth(const String &text, const uint8_t *font)
 {
     u8g2Fonts.setFont(font);
-    int16_t x1, y1;
-    uint16_t w, h;
-    display.display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
-    return w;
+    return u8g2Fonts.getUTF8Width(text.c_str());
 }
 
 uint16_t Renderer::getStringWidth(const String &text)
@@ -29,9 +26,11 @@ uint16_t Renderer::getStringWidth(const String &text)
 uint16_t Renderer::getStringHeight(const String &text, const uint8_t *font)
 {
     u8g2Fonts.setFont(font);
-    int16_t x1, y1;
-    uint16_t w, h;
-    display.display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+    uint16_t h = u8g2Fonts.getFontAscent();
+    if (hasDescender(text))
+    {
+        h -= u8g2Fonts.getFontDescent();
+    }
     return h;
 }
 
@@ -64,18 +63,7 @@ void Renderer::getStringBounds(Bounds &bounds, int16_t x, int16_t y, const Strin
         y = y - h / 2;
     }
 
-    bool hasDescender = false;
-    for (size_t i = 0; i < text.length(); i++)
-    {
-        char c = text.charAt(i);
-        if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y')
-        {
-            hasDescender = true;
-            break;
-        }
-    }
-
-    if (hasDescender)
+    if (hasDescender(text))
     {
         h -= u8g2Fonts.getFontDescent();
     }
@@ -134,4 +122,19 @@ void Renderer::drawCheckboard(const Bounds &bounds, uint16_t squareSize, uint16_
             }
         }
     }
+}
+
+bool Renderer::hasDescender(const String &text)
+{
+    bool hasDescender = false;
+    for (size_t i = 0; i < text.length(); i++)
+    {
+        char c = text.charAt(i);
+        if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y')
+        {
+            hasDescender = true;
+            break;
+        }
+    }
+    return hasDescender;
 }
