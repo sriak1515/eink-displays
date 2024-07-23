@@ -36,11 +36,11 @@ private:
     uint32_t readPaletteColor(uint8_t currentByte, size_t index);
     uint16_t getColorToDraw(uint32_t rgb888, boolean withColor = true);
     size_t getRowPos(size_t rowIndex);
-    void drawRow(size_t rowIndex);
+    void drawRow(size_t rowIndex, int16_t x_offset, int16_t y_offset);
 
 public:
     BitmapDrawer(Reader &reader, Display &display);
-    void drawBitmap(int16_t x = 0, int16_t y = 0);
+    void drawBitmap(int16_t x_offset = 0, int16_t y_offset = 0);
 };
 
 uint16_t rgb888ToRgb565(uint32_t rgb888);
