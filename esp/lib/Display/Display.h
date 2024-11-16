@@ -34,11 +34,7 @@ class Display
 
 public:
     GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS)> display = GxEPD2_DRIVER_CLASS(CS_PIN, DC_PIN, RST_PIN, BUSY_PIN);
-    size_t height;
-    size_t width;
     boolean hasMultiColors;
-    uint16_t numPages;
-    uint16_t pageHeight;
     uint16_t curPage;
 
     Display();
@@ -48,6 +44,10 @@ public:
     void refresh();
     void drawPixel(size_t x, size_t y, uint16_t color);
     boolean nextPage();
+    size_t height();
+    size_t width();
+    uint16_t pageHeight();
+    uint16_t numPages();
     size_t getPageHeight();
     size_t getPageHeight(size_t pageIdx);
 };

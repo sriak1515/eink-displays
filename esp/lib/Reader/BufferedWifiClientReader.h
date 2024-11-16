@@ -12,6 +12,7 @@ private:
     const char *host;
     const uint16_t port;
     const char *path;
+    const uint16_t timeout;
     uint8_t *buffer;
     size_t bufferSize;
     size_t bufferPos;
@@ -22,7 +23,7 @@ private:
     bool reset();
 
 public:
-    BufferedWifiClientReader(const char *host, uint16_t port, const char *path, size_t bufferSize);
+    BufferedWifiClientReader(const char *host, uint16_t port, const char *path, size_t bufferSize, uint16_t timeout = 5000);
     ~BufferedWifiClientReader();
 
     size_t getPos() override;

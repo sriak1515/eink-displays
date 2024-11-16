@@ -3,11 +3,7 @@
 
 Display::Display() : curPage(0)
 {
-  width = display.width();
-  height = display.height();
   hasMultiColors = ((display.epd2.panel == GxEPD2::ACeP730) || display.epd2.panel == GxEPD2::ACeP565) || (display.epd2.panel == GxEPD2::GDEY073D46) || (display.epd2.panel == GxEPD2::GDEM037F51);
-  numPages = display.pages();
-  pageHeight = display.pageHeight();
 }
 
 void Display::initDisplay()
@@ -45,8 +41,32 @@ void Display::drawPixel(size_t x, size_t y, uint16_t color)
   display.drawPixel(x, y, color);
 }
 
-size_t Display::getPageHeight(size_t pageIdx)
+size_t Display::height()
 {
+  return display.height();
+}
+
+size_t Display::width()
+{
+  return display.width();
+}
+
+uint16_t Display::pageHeight()
+{
+  return display.pageHeight();
+}
+
+uint16_t Display::numPages()
+{
+  return display.pages();
+}
+
+size_t Display::getPageHeight(size_t pageIdx)
+{ 
+  uint16_t numPages = this->numPages();
+  size_t height = this->height();
+  uint16_t pageHeight = this->pageHeight();
+
   if (pageIdx >= numPages)
   {
     return -1;

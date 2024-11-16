@@ -9,9 +9,11 @@ bool BufferedWifiClientReader::connect()
     }
 
     // Send HTTP request
+    Serial.println("Sending request");
     client->print(String("GET ") + path + " HTTP/1.1\r\n" +
                   "Host: " + host + "\r\n" +
                   "Connection: close\r\n\r\n");
+    Serial.println("Request sent");
 
     bool ok = false;
     int contentLength = -1;
@@ -50,7 +52,7 @@ bool BufferedWifiClientReader::reset()
     return true;
 }
 
-BufferedWifiClientReader::BufferedWifiClientReader(const char *host, uint16_t port, const char *path, size_t bufferSize) : host(host), port(port), path(path), bufferSize(bufferSize), bufferPos(0), bufferFill(0), pos(0)
+BufferedWifiClientReader::BufferedWifiClientReader(const char *host, uint16_t port, const char *path, size_t bufferSize, uint16_t timeout) : host(host), port(port), path(path), bufferSize(bufferSize), bufferPos(0), bufferFill(0), timeout(timeout), pos(0)
 {
     buffer = new uint8_t[bufferSize];
     client = new WiFiClient();
@@ -90,12 +92,14 @@ uint8_t BufferedWifiClientReader::read()
             {
                 delay(1);
             }
-            if (millis() - start > 5000)
+            if (millis() - start > timeout)
                 break;
         }
         if (bufferPos == bufferFill)
         {
-            Serial.println("Could not fetch more bytes before 5s timeout");
+            Serial.print("Could not fetch more bytes before ");
+            Serial.print(timeout);
+            Serial.println(" ms timeout");
             throw std::runtime_error("Could not fetch more bytes before 5s timeout");
         }
     }

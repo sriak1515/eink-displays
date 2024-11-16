@@ -33,4 +33,5 @@ void connectToWiFi(const char* ssid, const char* password, int connectTimeout)
 void disconnect()
 {
     WiFi.disconnect();
+    WiFi.mode(WIFI_OFF);
 }

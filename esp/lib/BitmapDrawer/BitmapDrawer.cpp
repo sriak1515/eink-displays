@@ -244,8 +244,8 @@ void BitmapDrawer::drawBitmap(int16_t x_offset, int16_t y_offset)
     Serial.println("Parsing header");
     parseBMPHeader();
 
-    actualWidth = min(bmpHeader->width, static_cast<uint32_t>(display.width - x_offset));
-    actualHeight = min(bmpHeader->height, static_cast<int32_t>(display.height - y_offset));
+    actualWidth = min(bmpHeader->width, static_cast<uint32_t>(display.width() - x_offset));
+    actualHeight = min(bmpHeader->height, static_cast<int32_t>(display.height() - y_offset));
     Serial.print("Actual width: ");
     Serial.println(actualWidth);
     Serial.print("Actual height: ");
@@ -261,17 +261,18 @@ void BitmapDrawer::drawBitmap(int16_t x_offset, int16_t y_offset)
     {
         size_t pageHeight = display.getPageHeight();
         pageEndRow = min(pageStartRow + pageHeight - 1, actualHeight - 1);
-        if (pageEndRow <= pageStartRow) {
+        if (pageEndRow <= pageStartRow)
+        {
             continue;
         }
-        //Serial.print("Drawing page ");
-        //Serial.print(display.curPage);
-        //Serial.print(" of height ");
-        //Serial.println(pageHeight);
-        //Serial.print("Starting row is ");
-        //Serial.print(pageStartRow);
-        //Serial.print(" and end row is ");
-        //Serial.println(pageEndRow);
+        // Serial.print("Drawing page ");
+        // Serial.print(display.curPage);
+        // Serial.print(" of height ");
+        // Serial.println(pageHeight);
+        // Serial.print("Starting row is ");
+        // Serial.print(pageStartRow);
+        // Serial.print(" and end row is ");
+        // Serial.println(pageEndRow);
         if (bmpHeader->flip)
         {
             Serial.print("Seeking to ");
