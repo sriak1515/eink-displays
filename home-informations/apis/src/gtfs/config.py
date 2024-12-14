@@ -13,11 +13,11 @@ local_stops_ids_merge = {
     "8501124:0:1": "Cully",
     "8501124:0:2": "Cully",
     "8501124:0:3": "Cully",
-    "8570559": "Cully, gare",
+    # "8570559": "Cully, gare",
     "8501125:0:1": "Epesses",
     "8501125:0:2": "Epesses",
-    "8510137": "Epesses",
+    # "8510137": "Epesses",
     "8570561": "Epesses, village"
 }
 
-gtfs_dataset_homepage = "https://opentransportdata.swiss/de/dataset/timetable-2024-gtfs2020"
+gtfs_dataset_homepage = "https://opentransportdata.swiss/de/dataset/timetable-2025-gtfs2020"

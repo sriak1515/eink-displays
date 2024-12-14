@@ -1,25 +1,35 @@
 from datetime import datetime, timedelta
 
+from gtfs.gtfs_realtime import GtfsRealtime
 from gtfs.gtfs_dataset import GtfsDataset
 
 
-def get_nth_next_departures(stop_ids, dataset: GtfsDataset, n=5):
-    now = datetime.now()
-    todays_stop_times = dataset.get_date_stop_times(now, stop_ids)
+def get_nth_next_departures(
+    stop_ids, dataset: GtfsDataset, realtime: GtfsRealtime, n=5
+):
+    now = datetime.now().replace(second=0, microsecond=0)
+    stop_times = dataset.get_time_window_stop_times(stop_ids)
+    realtime.update_delays(stop_times)
     return (
-        todays_stop_times.loc[todays_stop_times["departure_timestamp"] >= now]
+        stop_times.loc[stop_times["adjusted_departure_timestamp"] >= now]
         .groupby("stop_name")
         .head(n)
     )
 
 
-def get_next_departures(stop_ids, dataset: GtfsDataset, max_time_diff_seconds=15 * 60):
-    now = datetime.now()
-    todays_stop_times = dataset.get_date_stop_times(now, stop_ids)
-    return todays_stop_times.loc[
-        (todays_stop_times["departure_timestamp"] >= now)
+def get_next_departures(
+    stop_ids,
+    dataset: GtfsDataset,
+    realtime: GtfsRealtime,
+    max_time_diff_seconds=15 * 60,
+):
+    now = datetime.now().replace(second=0, microsecond=0)
+    stop_times = dataset.get_time_window_stop_times(stop_ids)
+    realtime.update_delays(stop_times)
+    return stop_times.loc[
+        (stop_times["adjusted_departure_timestamp"] >= now)
         & (
-            todays_stop_times["departure_timestamp"]
+            stop_times["adjusted_departure_timestamp"]
             <= now + timedelta(0, max_time_diff_seconds)
         )
     ]

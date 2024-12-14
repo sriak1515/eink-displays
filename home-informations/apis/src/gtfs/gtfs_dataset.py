@@ -3,21 +3,26 @@ import os
 import shutil
 import tempfile
 from datetime import datetime, timedelta
+from functools import lru_cache
 from pathlib import Path
 
 import duckdb
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from gtfs.config import gtfs_dataset_homepage
 from gtfs.consts import (
-    dataset_name_regex,
     dataset_extension,
+    dataset_name_regex,
     dataset_url_regex,
     table_name2dtypes,
 )
 from utils import (
     create_folder_if_not_exists,
     download_and_extract_zip,
+    get_today,
+    get_tomorrow,
+    get_yesterday,
 )
 
 logger = logging.getLogger(__name__)
@@ -34,29 +39,44 @@ class GtfsDataset:
             .joinpath("transport_name_mapping.csv")
         )
 
+    def get_time_window_stop_times(self, stop_ids=()):
+        return pd.concat(
+            [
+                self.get_date_stop_times(date, stop_ids)
+                for date in [get_yesterday(), get_today(), get_tomorrow()]
+            ]
+        )
 
-    def get_date_stop_times(self, date: datetime, stop_ids = []):
+    @lru_cache
+    def get_date_stop_times(self, date: datetime, stop_ids=()):
         date_yyymmdd = int(date.strftime("%Y%m%d"))
         date_yy = int(date.strftime("%Y"))
         date_mm = int(date.strftime("%m"))
         date_dd = int(date.strftime("%d"))
         weekday_str = date.strftime("%A").lower()
-        stop_ids_filter = "" if len(stop_ids) == 0 else f"AND stop_times.stop_id in {str(tuple(stop_ids))}"
+        stop_ids_filter = (
+            ""
+            if len(stop_ids) == 0
+            else f"AND stop_times.stop_id in {str(tuple(stop_ids))}"
+        )
         logger.info(f"Opening dataset {self.get_latest_local_dataset_file()}")
-        with duckdb.connect(os.path.join(self.save_dir, self.get_latest_local_dataset_file())) as db:
-#                JOIN (
-#                    SELECT stop_times.trip_id, last_stop_sequence, stop_name as last_stop_name
-#                    FROM (
-#                        SELECT trip_id, MAX(stop_sequence) as last_stop_sequence
-#                        FROM stop_times
-#                        GROUP BY trip_id
-#                    ) as max_sequence
-#                    INNER JOIN stop_times ON (max_sequence.trip_id = stop_times.trip_id AND max_sequence.last_stop_sequence = stop_times.stop_sequence)
-#                    INNER JOIN stops ON (stops.stop_id = stop_times.stop_id)
-#                ) as last_stop ON (last_stop.trip_id = stop_times.trip_id)
-#
-            #"""SELECT stop_times.trip_id, stop_times.stop_id, stop_times.stop_sequence, routes.route_short_name, stops.stop_name, trips.trip_headsign, stop_times.arrival_time, stop_times.departure_time, transport_name_mapping.FR"""
-            return db.execute(f"""
+        with duckdb.connect(
+            os.path.join(self.save_dir, self.get_latest_local_dataset_file())
+        ) as db:
+            #                JOIN (
+            #                    SELECT stop_times.trip_id, last_stop_sequence, stop_name as last_stop_name
+            #                    FROM (
+            #                        SELECT trip_id, MAX(stop_sequence) as last_stop_sequence
+            #                        FROM stop_times
+            #                        GROUP BY trip_id
+            #                    ) as max_sequence
+            #                    INNER JOIN stop_times ON (max_sequence.trip_id = stop_times.trip_id AND max_sequence.last_stop_sequence = stop_times.stop_sequence)
+            #                    INNER JOIN stops ON (stops.stop_id = stop_times.stop_id)
+            #                ) as last_stop ON (last_stop.trip_id = stop_times.trip_id)
+            #
+            # """SELECT stop_times.trip_id, stop_times.stop_id, stop_times.stop_sequence, routes.route_short_name, stops.stop_name, trips.trip_headsign, stop_times.arrival_time, stop_times.departure_time, transport_name_mapping.FR"""
+            return db.execute(
+                f"""
                 SELECT  *,
                         CASE
                             WHEN regexp_full_match(departure_time, '^([01]?[0-9]|2[0-4]):[0-5][0-9]:[0-5][0-9]$')
@@ -91,8 +111,8 @@ class GtfsDataset:
                 AND (
                         (
                         calendar.{weekday_str} = 1
-                        AND calendar.start_date < {date_yyymmdd}
-                        AND calendar.end_date > {date_yyymmdd}
+                        AND calendar.start_date <= {date_yyymmdd}
+                        AND calendar.end_date >= {date_yyymmdd}
                         )
                     OR (
                         trips.service_id IN (
@@ -109,7 +129,8 @@ class GtfsDataset:
                     WHERE date={date_yyymmdd}
                     AND exception_type = 2)
                 ORDER BY departure_timestamp, departure_time
-                """).df()
+                """
+            ).df()
 
     def update_dataset(
         self,
@@ -154,7 +175,7 @@ class GtfsDataset:
                 for table in extra_tables:
                     os.remove(os.path.join(download_dir, table + table_extension))
                     extra_tables_string.append(f"- {table}")
-                logger.warn(
+                logger.warning(
                     "Removed the following extra tables: "
                     + "\n".join(extra_tables_string)
                 )
@@ -188,7 +209,8 @@ class GtfsDataset:
             ):
                 logger.info(f"Removing old dataset {dataset}")
                 os.remove(os.path.join(self.save_dir, dataset))
-
+        # invalidate cache
+        self.get_date_stop_times.cache_clear()
         return True
 
     def get_local_dataset_files(self):
@@ -201,7 +223,9 @@ class GtfsDataset:
 
     def get_latest_local_dataset_file(self):
         if datetime.now() - self.latest_dataset_update_check > timedelta(hours=24):
-            logger.info(f"Not updated since {datetime.now() - self.latest_dataset_update_check}, last update was ({self.latest_dataset_update_check}), updating.")
+            logger.info(
+                f"Not updated since {datetime.now() - self.latest_dataset_update_check}, last update was ({self.latest_dataset_update_check}), updating."
+            )
             self.update_dataset()
 
         local_dataset_files = self.get_local_dataset_files()

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import io
 import logging
 import os
@@ -44,3 +44,12 @@ def format_if_datetime(value, strfmt="%H:%M"):
 
 def get_now_timestamp():
     return int(datetime.now().timestamp())
+
+def get_today():
+    return datetime.today().replace(hour=12, minute=0, second=0, microsecond=0)
+
+def get_yesterday():
+    return get_today() - timedelta(days=1)
+
+def get_tomorrow():
+    return get_today() + timedelta(days=1)

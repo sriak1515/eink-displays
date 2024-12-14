@@ -1,38 +1,43 @@
 import logging
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from google.transit import gtfs_realtime_pb2
-from gtfs.secret import GTFS_RT_API_KEY
 from utils import create_folder_if_not_exists
 
 logger = logging.getLogger(__name__)
 
 gtfs_rt_feeder_regex = re.compile(r"\d{12}")
 
+CANCELED_RELATIONSHIP_TERMS = ["CANCELED", "SKIPPED"]
+
 
 class GtfsRealtime:
-    def __init__(self, save_dir: str) -> None:
+    def __init__(self, save_dir: str, api_key: str) -> None:
         self.save_dir = save_dir
+        self.auth_headers = {"Authorization": api_key}
         self._feed = None
 
     @property
     def feed(self):
-       if not self.get_latest_gtfs_rt():
-              logger.error("Could not get latest RT data")
-              return None
-       return self._feed
+        if not self.get_latest_gtfs_rt():
+            logger.error("Could not get latest RT data")
+            return None
+        return self._feed
 
     def update_delays(
         self, stop_times, minimum_arrival_delay=0, minimum_departure_delay=0
     ) -> bool:
-        if self.feed is None:
-            return False
         # reset delays
         stop_times["arrival_delay"] = 0
         stop_times["departure_delay"] = 0
+        stop_times["is_canceled"] = False
+        stop_times["adjusted_departure_timestamp"] = stop_times["departure_timestamp"]
+        stop_times["adjusted_arrival_timestamp"] = stop_times["arrival_timestamp"]
+        if self.feed is None:
+            return False
 
         trip_ids = set(stop_times["trip_id"].unique().tolist())
         stops_ids = set(stop_times["stop_id"].unique().tolist())
@@ -74,7 +79,21 @@ class GtfsRealtime:
                             stop_times.loc[
                                 (trip_id, stop_id, stop_sequence), "departure_delay"
                             ] = departure_delay
+                            stop_times.loc[
+                                (trip_id, stop_id, stop_sequence), "adjusted_arrival_timestamp"
+                            ] += timedelta(minutes=arrival_delay)
+                            stop_times.loc[
+                                (trip_id, stop_id, stop_sequence), "adjusted_departure_timestamp"
+                            ] += timedelta(minutes=departure_delay) 
+                        stop_times.loc[
+                            (trip_id, stop_id, stop_sequence), "is_canceled"
+                        ] = (
+                            stop_update.HasField("schedule_relationship")
+                            and stop_update.schedule_relationship
+                            in CANCELED_RELATIONSHIP_TERMS
+                        )
         stop_times.reset_index(inplace=True)
+        stop_times.sort_values(by="adjusted_departure_timestamp", inplace=True)
         return True
 
     def get_latest_gtfs_rt(self, cleanup_old=True):
@@ -97,9 +116,8 @@ class GtfsRealtime:
         else:
             r = requests.get(
                 "https://api.opentransportdata.swiss/gtfsrt2020",
-                headers={"Authorization": GTFS_RT_API_KEY},
+                headers=self.auth_headers,
             )
-
             if bytes("error", "utf-8") in r.content:
                 logger.error(
                     "Please check API key. Server returned {}".format(
@@ -107,8 +125,10 @@ class GtfsRealtime:
                     )
                 )
                 return False
-
-            feed.ParseFromString(r.content)
+            try:
+                feed.ParseFromString(r.content)
+            except:
+                return False
 
             with open(os.path.join(self.save_dir, now_timestamp), "wb") as outfile:
                 outfile.write(r.content)
