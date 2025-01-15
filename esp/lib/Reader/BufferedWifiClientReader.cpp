@@ -1,4 +1,5 @@
 #include <BufferedWifiClientReader.h>
+#include <stdexcept>
 
 bool BufferedWifiClientReader::connect()
 {

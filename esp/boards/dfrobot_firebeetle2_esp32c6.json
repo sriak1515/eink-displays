@@ -4,8 +4,7 @@
     "extra_flags": [
       "-DARDUINO_DFROBOT_FIREBEETLE_2_ESP32C6",
       "-DARDUINO_USB_MODE=1",
-      "-DARDUINO_RUNNING_CORE=1",
-      "-DARDUINO_EVENT_RUNNING_CORE=1"
+      "-DARDUINO_USB_CDC_ON_BOOT=1"
     ],
     "f_cpu": "160000000L",
     "f_flash": "40000000L",
