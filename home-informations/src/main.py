@@ -112,7 +112,7 @@ def get_timetable(
     canvas = Image.new("P", (width, height), "white")
     font_path = (
         pathlib.Path(__file__)
-        .parent.parent.joinpath("fonts")
+        .parent.joinpath("fonts")
         # .joinpath("scientifica").joinpath("scientifica.ttf")
         .joinpath("OpenSans-Regular.ttf")
         .resolve()

@@ -1,5 +1,7 @@
+import os
 from dataclasses import dataclass
 from typing import List, Tuple
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 

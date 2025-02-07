@@ -1,0 +1,26 @@
+[project]
+name = "home-informations"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.3",
+    "duckdb>=1.0.0",
+    "fastapi[standard]>=0.115.8",
+    "gtfs-realtime-bindings>=1.0.0",
+    "pandas>=2.2.3",
+    "pillow>=11.1.0",
+    "protobuf>=5.27.2",
+    "pyarrow>=17.0.0",
+    "pydantic-settings>=2.5.2",
+    "requests>=2.32.3",
+]
+
+[dependency-groups]
+lint = [
+    "ruff>=0.9.5",
+]
+dev = [
+    "ipykernel>=6.29.5",
+]
