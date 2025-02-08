@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from gtfs.gtfs_realtime import GtfsRealtime
-from gtfs.gtfs_dataset import GtfsDataset
+from app.models.gtfs.gtfs_dataset import GtfsDataset
+from app.models.gtfs.gtfs_realtime import GtfsRealtime
 
 
 def get_nth_next_departures(

@@ -56,3 +56,12 @@ def get_yesterday():
 
 def get_tomorrow():
     return get_today() + timedelta(days=1)
+
+def map_group_row(row):
+    return {
+        "line": row["route_short_name"],
+        "direction": row["trip_headsign"],
+        "time": row["departure_timestamp"].strftime("%H:%M"),
+        "delay": row["departure_delay"],
+        "is_canceled": row["is_canceled"],
+    }

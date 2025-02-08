@@ -3,6 +3,8 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
 
+from app.models.timetable.timetable import TimeTable, TimeTableEntry
+
 
 @dataclass
 class Bounds:
@@ -16,21 +18,6 @@ class Bounds:
         new_bounds.width += max(round(percentage / 100 * self.width), 1)
         new_bounds.height += max(round(percentage / 100 * self.height), 1)
         return new_bounds
-
-
-@dataclass
-class TimeTableEntry:
-    line: str
-    direction: str
-    time: str
-    delay: int
-    is_canceled: bool
-
-
-@dataclass
-class TimeTable:
-    stop_name: str
-    entries: List[TimeTableEntry]
 
 
 def get_text_bounds(text: str, font):

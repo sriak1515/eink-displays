@@ -1,5 +1,3 @@
-import pandas as pd
-import pyarrow as pa
 import re
 
 table_name2dtypes = {

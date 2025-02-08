@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 
 import requests
 from google.transit import gtfs_realtime_pb2
-from utils import create_folder_if_not_exists
+
+from app.utils.helpers import create_folder_if_not_exists
 
 logger = logging.getLogger(__name__)
 

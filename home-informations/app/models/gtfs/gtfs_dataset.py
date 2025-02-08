@@ -10,19 +10,20 @@ import duckdb
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from gtfs.config import gtfs_dataset_homepage
-from gtfs.consts import (
-    dataset_extension,
-    dataset_name_regex,
-    dataset_url_regex,
-    table_name2dtypes,
-)
-from utils import (
+from app.utils.helpers import (
     create_folder_if_not_exists,
     download_and_extract_zip,
     get_today,
     get_tomorrow,
     get_yesterday,
+)
+
+from app.models.gtfs.config import gtfs_dataset_homepage
+from app.models.gtfs.consts import (
+    dataset_extension,
+    dataset_name_regex,
+    dataset_url_regex,
+    table_name2dtypes,
 )
 
 logger = logging.getLogger(__name__)
