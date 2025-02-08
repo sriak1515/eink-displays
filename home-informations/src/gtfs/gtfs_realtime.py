@@ -80,11 +80,13 @@ class GtfsRealtime:
                                 (trip_id, stop_id, stop_sequence), "departure_delay"
                             ] = departure_delay
                             stop_times.loc[
-                                (trip_id, stop_id, stop_sequence), "adjusted_arrival_timestamp"
+                                (trip_id, stop_id, stop_sequence),
+                                "adjusted_arrival_timestamp",
                             ] += timedelta(minutes=arrival_delay)
                             stop_times.loc[
-                                (trip_id, stop_id, stop_sequence), "adjusted_departure_timestamp"
-                            ] += timedelta(minutes=departure_delay) 
+                                (trip_id, stop_id, stop_sequence),
+                                "adjusted_departure_timestamp",
+                            ] += timedelta(minutes=departure_delay)
                         stop_times.loc[
                             (trip_id, stop_id, stop_sequence), "is_canceled"
                         ] = (

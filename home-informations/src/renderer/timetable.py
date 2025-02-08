@@ -1,7 +1,5 @@
-import os
 from dataclasses import dataclass
 from typing import List, Tuple
-from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -138,7 +136,9 @@ def draw_timetable(
     header_bounds = draw_timetable_header(
         drawer, bounds.grow_percentage(5), timetable.stop_name, font_header
     )
-    remaining_height = bounds.height - header_bounds.height + header_y_offset + len(timetable.entries)
+    remaining_height = (
+        bounds.height - header_bounds.height + header_y_offset + len(timetable.entries)
+    )
     height_per_entry = min(remaining_height // len(timetable.entries), max_height)
     leftover_height = (
         remaining_height % len(timetable.entries)
@@ -156,7 +156,6 @@ def draw_timetable(
 
 
 def draw_timetable_header(drawer: ImageDraw, bounds, stop_name: str, font) -> Bounds:
-
     header_text_bounds = get_text_bounds(stop_name, font)
     header_bounds = header_text_bounds.grow_percentage(5)
     header_x_offset = bounds.left + max(
@@ -193,21 +192,21 @@ def draw_time_table_entry(
         entry.line,
         "black",
         font=font,
-        anchor="lm"
+        anchor="lm",
     )
     drawer.text(
         (bounds.left + direction_x_offset, y_offset),
         direction_text,
         "black",
         font=font,
-        anchor="lm"
+        anchor="lm",
     )
     drawer.text(
         (bounds.left + time_x_offset, y_offset),
         time_text,
         "black",
         font=font,
-        anchor="lm"
+        anchor="lm",
     )
     if entry.is_canceled:
         drawer.line(
