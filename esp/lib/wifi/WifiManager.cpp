@@ -1,6 +1,7 @@
+#include <WifiManager.h>
+
 #include <FS.h>
 #include <WiFi.h>
-#include <wifi.h>
 
 void connectToWiFi(const char* ssid, const char* password, int connectTimeout)
 {

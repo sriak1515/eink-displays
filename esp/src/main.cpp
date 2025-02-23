@@ -1,13 +1,14 @@
 #include <Arduino.h>
 #include <LittleFS.h>
+#include <stdexcept>
 
-#include <wifi.h>
+#include <WifiManager.h>
 #include <timeUtils.h>
 #include <Display.h>
 #include <TimetableRenderer.h>
 #include <Renderer.h>
 #include <BitmapDrawer.h>
-#include <BufferedWifiClientReader.h>
+#include <BufferedHTTPClientReader.h>
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
@@ -31,14 +32,14 @@ void beginDeepSleep(tm *timeInfo)
 
 void drawPrevious(Display *display)
 {
-  BufferedWifiClientReader readerPrevious("192.168.0.10", 4000, "/previous_timetable?width=460&height=780&rotation=90", 2048, 10 * 1000);
+  BufferedHTTPClientReader readerPrevious("192.168.0.10", 4000, "/previous_timetable?width=460&height=780&rotation=90", 2048, 10 * 1000);
   BitmapDrawer drawerPrevious(readerPrevious, *display);
   drawerPrevious.drawBitmap(10, 10);
 }
 
 void drawCurrent(Display *display)
 {
-  BufferedWifiClientReader reader("192.168.0.10", 4000, "/timetable?width=460&height=780&n=5&font_header_size=44&font_entries_size=36&rotation=90", 2048, 10 * 1000);
+  BufferedHTTPClientReader reader("192.168.0.10", 4000, "/timetable?width=460&height=780&n=5&font_header_size=44&font_entries_size=36&rotation=90", 2048, 10 * 1000);
   BitmapDrawer drawer(reader, *display);
   drawer.drawBitmap(10, 10);
 }
@@ -80,14 +81,40 @@ void setup()
   Serial.println("Displaying image.");
 
   uint32_t startTime = millis();
+
+#ifdef ENABLE_FAST_PARTIAL_MODE
   display->display.epd2.enableFastPartialMode();
+#endif
+
   display->display.setPartialWindow(0, 0, 800, 480);
-  drawPrevious(display);
-  drawCurrent(display);
+  try
+  {
+    Serial.println("Drawing previous image");
+    drawPrevious(display);
+    Serial.println("Drawing current image");
+    drawCurrent(display);
+    Serial.print("Image displayed in ");
+    Serial.print(millis() - startTime);
+    Serial.println(" ms");
+  }
+  catch(const std::runtime_error& re)
+  {
+    Serial.print("Runtime error occured: ");
+    Serial.println(re.what());
+  }
+  catch(const std::exception& ex) {
+    Serial.print("Exception occured: ");
+    Serial.println(ex.what());
+  }
+  catch (...)
+  {
+    Serial.println("Unknown error");
+  }
+
+#ifdef ENABLE_FAST_PARTIAL_MODE
   display->display.epd2.disableFastPartialMode();
-  Serial.print("Image displayed in ");
-  Serial.print(millis() - startTime);
-  Serial.println(" ms");
+#endif
+
   disconnect();
   display->display.hibernate();
   beginDeepSleep(&timeInfo);

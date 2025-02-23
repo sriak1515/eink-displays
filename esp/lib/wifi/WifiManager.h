@@ -1,5 +1,5 @@
-#ifndef __WIFI_H__
-#define __WIFI_H__
+#ifndef __WIFI_MANAGER_H__
+#define __WIFI_MANAGER_H__
 
 
 #define BUFFER_SIZE 4096

@@ -5,28 +5,20 @@
 
 #include <Arduino.h>
 
-//#if defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_7C
+// #if defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_7C
+#if defined(DISP_7C)
 #include <GxEPD2_7C.h>
-//#elif defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_3C
-#include <GxEPD2_BW.h>
+#elif defined(DISP_3C)
 #include <GxEPD2_3C.h>
-//#elif defined(GxEPD2_DISPLAY_CLASS) && GxEPD2_DISPLAY_CLASS == GxEPD2_4C
-#include <GxEPD2_4C.h>
-//#else
-//#error "Unsupported GxEPD2_DISPLAY_CLASS"
-//#endif
-
+#else
+#error "Unsupported display class"
+#endif
 
 #define CS_PIN 18
 #define DC_PIN 20
 #define RST_PIN 19
 #define BUSY_PIN 1
-//#define GxEPD2_DISPLAY_CLASS GxEPD2_7C
-//#define GxEPD2_DRIVER_CLASS GxEPD2_730c_ACeP_730
-//#define GxEPD2_DISPLAY_CLASS GxEPD2_4C
-//#define GxEPD2_DRIVER_CLASS GxEPD2_370c_GDEM037F51
 #define MAX_DISPLAY_BUFFER_SIZE 655360ul
-//#define MAX_DISPLAY_BUFFER_SIZE 65536ul
 #define MAX_HEIGHT(EPD) (EPD::HEIGHT <= (MAX_DISPLAY_BUFFER_SIZE) / (EPD::WIDTH / 2) ? EPD::HEIGHT : (MAX_DISPLAY_BUFFER_SIZE) / (EPD::WIDTH / 2))
 
 class Display
