@@ -5,22 +5,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libraqm0 \
   && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /src
 
-COPY uv.lock /app
-COPY pyproject.toml /app
+COPY uv.lock /src
+COPY pyproject.toml /src
 
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-editable
 
-# Copy the project into the intermediate image
-COPY app/ /app
+# Copy alembic migrations
+COPY alembic.ini /src/
+COPY migrations /src/migrations
 
-COPY fonts /app/fonts
+# Copy the project
+COPY app/ /src/app
+
+COPY fonts /src/app/fonts
 
 RUN mkdir /data
 
 ENV DATA_DIR="/data"
 
-CMD ["/app/.venv/bin/fastapi", "run", "/app/main.py", "--port", "80"]
+CMD ["bash", "-c", "/src/.venv/bin/alembic upgrade head && /src/.venv/bin/fastapi run /src/app/main.py --port 80"]

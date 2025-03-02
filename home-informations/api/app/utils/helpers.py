@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import enum
 import io
 import logging
 import os
@@ -65,3 +66,7 @@ def map_group_row(row):
         "delay": row["departure_delay"],
         "is_canceled": row["is_canceled"],
     }
+
+def enum_values(enum_class: type[enum.Enum]) -> list:
+    """Get values for enum."""
+    return [status.value for status in enum_class]
