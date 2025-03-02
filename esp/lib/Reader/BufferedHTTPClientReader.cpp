@@ -2,21 +2,21 @@
 #include <stdexcept>
 #include <format>
 
-BufferedHTTPClientReader::BufferedHTTPClientReader(const char* host, uint16_t port, const char* path, size_t bufferSize, uint16_t timeout, uint16_t numRetries, uint16_t retryDelay) : host(host), port(port), path(path), bufferSize(bufferSize), bufferPos(0), bufferFill(0), timeout(timeout), pos(0), numRetries(numRetries), retryDelay(retryDelay)
+BufferedHTTPClientReader::BufferedHTTPClientReader(const char *url, size_t bufferSize, uint16_t timeout, uint16_t numRetries, uint16_t retryDelay) : url(url), bufferSize(bufferSize), bufferPos(0), bufferFill(0), timeout(timeout), pos(0), numRetries(numRetries), retryDelay(retryDelay)
 {
     buffer = new uint8_t[bufferSize];
-    client = new HTTPClient();
     connect();
 }
 
 BufferedHTTPClientReader::~BufferedHTTPClientReader()
 {
     delete[] buffer;
+    client.end();
 }
 
 void BufferedHTTPClientReader::connect()
 {
-    client->end();
+    client.end();
     pos = 0;
     bufferPos = 0;
     bufferFill = 0;
@@ -29,23 +29,20 @@ void BufferedHTTPClientReader::connect()
         {
             std::string errorMessage;
             errorMessage += "Could not connect to ";
-            errorMessage += host;
-            errorMessage += ":";
-            errorMessage += std::to_string(port);
-            errorMessage += path;
+            errorMessage += url;
             errorMessage += " after ";
             errorMessage += std::to_string(numRetries);
             errorMessage += " retries.";
             throw std::runtime_error(errorMessage);
         }
-        if (!client->begin(host, port, path))
+        if (!client.begin(url))
         {
             Serial.print("Connection failed, retrying...");
             retries++;
             delay(retryDelay);
             continue;
         }
-        int returnCode = client->GET();
+        int returnCode = client.GET();
         if (returnCode == HTTP_CODE_OK)
         {
             break;
@@ -61,7 +58,7 @@ void BufferedHTTPClientReader::connect()
         }
     }
 
-    stream = client->getStreamPtr();
+    stream = client.getStreamPtr();
 }
 
 size_t BufferedHTTPClientReader::getPos()
