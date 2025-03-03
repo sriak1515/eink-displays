@@ -1,0 +1,27 @@
+[project]
+name = "image-processing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Raphaël Barman", email = "barman.raphael@gmail.coM" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.2",
+    "scikit-image>=0.25.2",
+]
+
+[build-system]
+requires = ["setuptools>=61", "Cython", "numpy>=2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = false
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pillow>=11.1.0",
+    "ruff>=0.9.5",
+]
