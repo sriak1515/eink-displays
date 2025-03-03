@@ -10,7 +10,7 @@ router = APIRouter(prefix="/timetable", tags=["timetable"])
 
 
 @router.get(
-    "/",
+    "",
     responses={200: {"content": {"image/png": {}}}},
     response_class=Response,
 )
