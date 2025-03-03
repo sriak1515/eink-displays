@@ -118,7 +118,7 @@ class GtfsRealtime:
                 feed.ParseFromString(infile.read())
         else:
             r = requests.get(
-                "https://api.opentransportdata.swiss/gtfsrt2020",
+                "https://api.opentransportdata.swiss/la/gtfs-rt",
                 headers=self.auth_headers,
             )
             if bytes("error", "utf-8") in r.content:
