@@ -13,6 +13,7 @@ dependencies = [
     "gtfs-realtime-bindings>=1.0.0",
     "pandas>=2.2.3",
     "pillow>=11.1.0",
+    "pillow-heif>=0.21.0",
     "protobuf>=5.27.2",
     "pyarrow>=17.0.0",
     "pydantic-settings>=2.5.2",

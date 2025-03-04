@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.display import router as display_router
 from app.api.v1.gtfs import router as gtfs_router
 from app.api.v1.timetable import router as timetable_router
+from app.api.v1.immich import router as immich_router
 from app.config import settings
 from app.database.database import create_db_and_tables, get_session
 from app.services.display_service import remove_all_updates_before
@@ -64,3 +65,4 @@ api_v1_prefix = "/api/v1"
 app.include_router(gtfs_router, prefix=api_v1_prefix)
 app.include_router(timetable_router, prefix=api_v1_prefix)
 app.include_router(display_router, prefix=api_v1_prefix)
+app.include_router(immich_router, prefix=api_v1_prefix)
