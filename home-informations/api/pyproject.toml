@@ -17,8 +17,10 @@ dependencies = [
     "protobuf>=5.27.2",
     "pyarrow>=17.0.0",
     "pydantic-settings>=2.5.2",
+    "python-ulid[pydantic]>=3.0.0",
     "requests>=2.32.3",
     "scikit-image>=0.25.2",
+    "smartcrop>=0.4.1",
     "sqlalchemy>=2.0.38",
     "sqlmodel>=0.0.22",
 ]

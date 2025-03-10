@@ -376,8 +376,10 @@ dependencies = [
     { name = "protobuf" },
     { name = "pyarrow" },
     { name = "pydantic-settings" },
+    { name = "python-ulid", extra = ["pydantic"] },
     { name = "requests" },
     { name = "scikit-image" },
+    { name = "smartcrop" },
     { name = "sqlalchemy" },
     { name = "sqlmodel" },
 ]
@@ -405,8 +407,10 @@ requires-dist = [
     { name = "protobuf", specifier = ">=5.27.2" },
     { name = "pyarrow", specifier = ">=17.0.0" },
     { name = "pydantic-settings", specifier = ">=2.5.2" },
+    { name = "python-ulid", extras = ["pydantic"], specifier = ">=3.0.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "scikit-image", specifier = ">=0.25.2" },
+    { name = "smartcrop", specifier = ">=0.4.1" },
     { name = "sqlalchemy", specifier = ">=2.0.38" },
     { name = "sqlmodel", specifier = ">=0.0.22" },
 ]
@@ -1067,6 +1071,20 @@ wheels = [
 ]
 
 [[package]]
+name = "python-ulid"
+version = "3.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9a/db/e5e67aeca9c2420cb91f94007f30693cc3628ae9783a565fd33ffb3fbfdd/python_ulid-3.0.0.tar.gz", hash = "sha256:e50296a47dc8209d28629a22fc81ca26c00982c78934bd7766377ba37ea49a9f", size = 28822 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/63/4e/cc2ba2c0df2589f35a4db8473b8c2ba9bbfc4acdec4a94f1c78934d2350f/python_ulid-3.0.0-py3-none-any.whl", hash = "sha256:e4c4942ff50dbd79167ad01ac725ec58f924b4018025ce22c858bfcff99a5e31", size = 11194 },
+]
+
+[package.optional-dependencies]
+pydantic = [
+    { name = "pydantic" },
+]
+
+[[package]]
 name = "pytz"
 version = "2025.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1317,6 +1335,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050 },
+]
+
+[[package]]
+name = "smartcrop"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fd/84/ce7f973934ce80edd69cfc80c1fbff17c2736e9caa2ea426b63338b86aaf/smartcrop-0.4.1.tar.gz", hash = "sha256:3acc29f4e5ab9de29a870e05078faab8e7d2d72fbf4ec7b7cdc1ae391cd10e4e", size = 6632978 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/4d/67704e29d1897a2c6c615adb6362431b94632827cd379ff6ced51c7a8b96/smartcrop-0.4.1-py3-none-any.whl", hash = "sha256:f2367d8712468dd33909d55f15db2720f31c1863e9b59bd55231d83c06ca4d78", size = 8409 },
 ]
 
 [[package]]

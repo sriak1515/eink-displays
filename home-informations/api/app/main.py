@@ -9,11 +9,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.display import router as display_router
 from app.api.v1.gtfs import router as gtfs_router
-from app.api.v1.timetable import router as timetable_router
 from app.api.v1.immich import router as immich_router
+from app.api.v1.timetable import router as timetable_router
 from app.config import settings
 from app.database.database import create_db_and_tables, get_session
 from app.services.display_service import remove_all_updates_before
+from app.services.immich_service import run_fill_cache
+from app.utils.immich_cache import get_immich_cache
 
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
@@ -21,6 +23,7 @@ logging.getLogger().setLevel(logging.INFO)
 scheduler = BackgroundScheduler()
 trigger = IntervalTrigger(hours=settings.update_clear_interval_in_hours)
 
+logger = logging.getLogger(__name__)
 
 def cleanup_updates():
     session = get_session()
@@ -31,10 +34,17 @@ def cleanup_updates():
     )
 
 
+def fill_immich_cache():
+    logger.info("Filling immich cache")
+    cache = get_immich_cache()
+    run_fill_cache(cache)
+
+
 scheduler.add_job(
     cleanup_updates,
     trigger,
 )
+scheduler.add_job(fill_immich_cache, IntervalTrigger(hours=1))
 scheduler.start()
 
 
