@@ -50,7 +50,7 @@ cdef cnp.ndarray[double, ndim=1] rgb_to_cielab(cnp.ndarray[cnp.uint8_t, ndim=1] 
     lab[2] = B
     return lab
 
-def floyd_steinberg(cnp.ndarray[cnp.uint8_t, ndim=3] input_img, cnp.ndarray[cnp.uint8_t, ndim=2] epd_colors, double dithering_strength, int EPD_W, int EPD_H, int enable_lab = 0):
+def floyd_steinberg(cnp.ndarray[cnp.uint8_t, ndim=3] input_img, cnp.ndarray[cnp.uint8_t, ndim=2] epd_colors, double dithering_strength, int enable_lab = 0):
     """
     Apply Floyd-Steinberg dithering with strength control to an input image using color theory.
     
@@ -58,8 +58,6 @@ def floyd_steinberg(cnp.ndarray[cnp.uint8_t, ndim=3] input_img, cnp.ndarray[cnp.
         input_img (numpy.ndarray): Input image with shape (height, width, 3) of type uint8.
         epd_colors (numpy.ndarray): Array of EPD colors with shape (num_colors, 3) of type double.
         dithering_strength (double): Dithering strength parameter from 0.0 to 1.0.
-        EPD_W (int): Width of the EPD display.
-        EPD_H (int): Height of the EPD display.
         
     Returns:
         output_img (numpy.ndarray): Output dithered image with shape (height, width, 3) of type uint8.
@@ -110,19 +108,19 @@ def floyd_steinberg(cnp.ndarray[cnp.uint8_t, ndim=3] input_img, cnp.ndarray[cnp.
                 scaled_diff = diff * dithering_strength
             
                 # Right pixel
-                if x + 1 < EPD_W:
+                if x + 1 < width:
                     input_img[y, x + 1, c] = <cnp.uint8_t>(min(max(input_img[y, x + 1, c] + <int>(scaled_diff * 7/16 * 255), 0), 255))
                 
                 # Bottom-left pixel
-                if x - 1 >= 0 and y + 1 < EPD_H:
+                if x - 1 >= 0 and y + 1 < height:
                     input_img[y + 1, x - 1, c] = <cnp.uint8_t>(min(max(input_img[y + 1, x - 1, c] + <int>(scaled_diff * 3/16 * 255), 0), 255))
                 
                 # Bottom pixel
-                if y + 1 < EPD_H:
+                if y + 1 < height:
                     input_img[y + 1, x, c] = <cnp.uint8_t>(min(max(input_img[y + 1, x, c] + <int>(scaled_diff * 5/16 * 255), 0), 255))
                 
                 # Bottom-right pixel
-                if x + 1 < EPD_W and y + 1 < EPD_H:
+                if x + 1 < width and y + 1 < height:
                     input_img[y + 1, x + 1, c] = <cnp.uint8_t>(min(max(input_img[y + 1, x + 1, c] + <int>(scaled_diff * 1/16 * 255), 0), 255))
 
             # Set output image pixel
