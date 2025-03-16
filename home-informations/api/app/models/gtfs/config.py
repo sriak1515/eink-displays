@@ -27,5 +27,5 @@ local_stops_ids_merge = {
 }
 
 gtfs_dataset_homepage = (
-    "https://opentransportdata.swiss/de/dataset/timetable-2025-gtfs2020"
+    "https://data.opentransportdata.swiss/dataset/timetable-2025-gtfs2020"
 )
