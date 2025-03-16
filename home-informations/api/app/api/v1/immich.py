@@ -1,30 +1,30 @@
-from datetime import datetime
-from io import BytesIO
 import logging
 import time
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Response
+from fastapi.responses import FileResponse
 
 from app.services.immich_service import run_fill_cache
-from app.utils.immich_cache import ImmichCacheDep
+from app.utils.immich_cache import ImmichCache, ImmichCacheDep
 
 router = APIRouter(prefix="/immich", tags=["immich"])
 
 logger = logging.getLogger(__name__)
+
+def remove_from_cache(entry: ImmichCache.Entry, cache: ImmichCache):
+    cache.cleanup(entry)
 
 @router.get(
     "/image",
     responses={200: {"content": {"image/bmp": {}}}},
     response_class=Response,
 )
-def get_immich_image(*, cache: ImmichCacheDep):
-    run_fill_cache(cache)
-    if cache.is_empty():
+def get_immich_image(*, cache: ImmichCacheDep, background_tasks: BackgroundTasks):
+    if cache.size() < 5:
+        run_fill_cache(cache)
         time.sleep(2)
         if cache.is_empty():
             raise HTTPException(503, "Cache is empty and Immich is unavailable")
-    image = cache.pop()
-    buffer = BytesIO()
-    image.save(buffer, "BMP")
-    buffer.seek(0)
-    return Response(content=buffer.getvalue(), media_type="image/bmp")
+    entry = cache.pop()
+    background_tasks.add_task(remove_from_cache, entry=entry, cache=cache)
+    return FileResponse(entry.path, media_type="image/bmp")

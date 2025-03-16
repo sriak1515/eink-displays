@@ -74,11 +74,9 @@ class ImmichCache:
     def is_empty(self) -> bool:
         return len(self.cache_files) == 0
 
-    def pop(self) -> Image.Image:
+    def pop(self) -> "ImmichCache.Entry":
         _, entry = self.cache_files.popitem(False)
-        image = Image.open(entry.path)
-        self.cleanup(entry)
-        return image
+        return entry
 
     def cleanup(self, entry: "ImmichCache.Entry"):
         self.cache_size -= os.stat(entry.path).st_size
@@ -118,6 +116,9 @@ class ImmichCache:
         remove_empty_folders(self.base_dir)
         for entry in sorted(entries, key=lambda entry: entry.ulid):
             self.cache_files[entry.immich_uuid] = entry
+
+    def size(self):
+        return len(self.cache_files)
 
     @dataclass
     class Entry:
