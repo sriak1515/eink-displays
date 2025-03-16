@@ -29,7 +29,6 @@ def fill_cache_locked(cache: ImmichCache) -> bool:
 
 
 def fill_cache(cache: ImmichCache) -> bool:
-    portrait = settings.screen_width < settings.screen_height
     client = ImmichClient(settings.immich_base_url, settings.immich_api_key)
     if not client.is_available:
         logger.info("Immich is not available, aborting cache filling")
@@ -42,7 +41,7 @@ def fill_cache(cache: ImmichCache) -> bool:
         results += [
             x["id"]
             for x in result["assets"]["items"]
-            if is_portrait(x["exifInfo"]) == portrait
+            if is_portrait(x["exifInfo"]) == settings.portrait
         ]
         next_page = result["assets"]["nextPage"]
         page += 1

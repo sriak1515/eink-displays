@@ -51,6 +51,8 @@ class ImmichCache:
             return False
         image = self.immich_client.get_image(immich_uuid)
         image = crop_image(image, self.screen_size[0], self.screen_size[1])
+        if image.height > image.width:
+            image = image.transpose(Image.Transpose.ROTATE_90)
         ulid = str(ULID())
         filename = f"{ulid}_{immich_uuid}.bmp"
         path = os.path.join(self.base_dir, filename)

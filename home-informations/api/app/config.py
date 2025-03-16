@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     data_dir: str = "/data"
     gtfs_api_key: str
+    portrait: bool = True
     screen_width: int = 480
     screen_height: int = 800
     immich_cache_cuttof_date: datetime = datetime.fromisoformat("2023-12-15T00:00:00.000Z")
