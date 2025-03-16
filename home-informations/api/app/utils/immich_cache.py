@@ -19,7 +19,6 @@ filename_regex = re.compile(
     r"^([0-9A-Z]{26})_([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})(\....)$"
 )
 
-logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 class ImmichCache:
@@ -77,9 +76,7 @@ class ImmichCache:
 
     def pop(self) -> Image.Image:
         _, entry = self.cache_files.popitem(False)
-        logger.warning("Loading image")
         image = Image.open(entry.path)
-        logger.warning("Loaded image")
         self.cleanup(entry)
         return image
 

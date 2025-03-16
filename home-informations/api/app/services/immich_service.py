@@ -13,13 +13,16 @@ logger = logging.getLogger(__name__)
 fill_cache_lock = Lock()
 
 def run_fill_cache(cache: ImmichCache):
-    global fill_cache_lock
+    thread = Thread(target=fill_cache_locked, args=(cache,))
+    thread.start()
+
+def fill_cache_locked(cache: ImmichCache) -> bool:
     if fill_cache_lock.acquire(blocking=False):
         try:
-            thread = Thread(target=fill_cache, args=(cache,))
             logger.info("Started cache filling")
-            thread.start()
+            fill_cache(cache)
         finally:
+            logger.info("Releasing lock")
             fill_cache_lock.release()
     else:
         logger.info("Cache filling is already running")
@@ -48,6 +51,7 @@ def fill_cache(cache: ImmichCache) -> bool:
         if cache.store(result):
             logger.info("Cache is full, stopping")
             break
+    logger.info("Finish cached filling")
     return True
 
 

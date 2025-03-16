@@ -17,7 +17,7 @@ from app.services.display_service import remove_all_updates_before
 from app.services.immich_service import run_fill_cache
 from app.utils.immich_cache import get_immich_cache
 
-logging.basicConfig()
+logging.basicConfig(format='%(asctime)s %(message)s')
 logging.getLogger().setLevel(logging.INFO)
 
 scheduler = BackgroundScheduler()
@@ -36,7 +36,7 @@ def cleanup_updates():
 
 def fill_immich_cache():
     logger.info("Filling immich cache")
-    cache = get_immich_cache()
+    cache = next(get_immich_cache())
     run_fill_cache(cache)
 
 

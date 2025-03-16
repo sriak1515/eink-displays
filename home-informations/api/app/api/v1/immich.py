@@ -1,15 +1,16 @@
 from datetime import datetime
 from io import BytesIO
+import logging
 import time
 
 from fastapi import APIRouter, HTTPException, Response
 
-from app.services.image_processing_service import prepare_image_for_eink
 from app.services.immich_service import run_fill_cache
 from app.utils.immich_cache import ImmichCacheDep
 
 router = APIRouter(prefix="/immich", tags=["immich"])
 
+logger = logging.getLogger(__name__)
 
 @router.get(
     "/image",
