@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 fill_cache_lock = Lock()
 
-
 def run_fill_cache(cache: ImmichCache):
+    global fill_cache_lock
     if fill_cache_lock.acquire(blocking=False):
         try:
             thread = Thread(target=fill_cache, args=(cache,))

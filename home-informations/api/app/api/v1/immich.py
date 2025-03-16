@@ -23,7 +23,7 @@ def get_immich_image(*, cache: ImmichCacheDep):
         if cache.is_empty():
             raise HTTPException(503, "Cache is empty and Immich is unavailable")
     image = cache.pop()
-    image = prepare_image_for_eink(image)
     buffer = BytesIO()
     image.save(buffer, "BMP")
+    buffer.seek(0)
     return Response(content=buffer.getvalue(), media_type="image/bmp")

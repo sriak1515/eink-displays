@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     immich_cache_cuttof_date: datetime = datetime.fromisoformat("2023-12-15T00:00:00.000Z")
     immich_base_url: str
     immich_api_key: str
-    immich_cache_max_size: str = "1GB"
+    immich_cache_max_size: str = "1G"
     sqlite_db_path: str = "/data/db.sqlite"
     update_clear_interval_in_hours: int = 6
 

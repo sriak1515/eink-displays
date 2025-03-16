@@ -1,23 +1,26 @@
+import logging
 import os
 import re
 import shutil
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import Annotated, List, Tuple, Union
+from typing import Annotated, Tuple, Union
 
 from fastapi import Depends
 from PIL import Image
 from ulid import ULID
 
-from app.models.immich import ImmichClient
 from app.config import settings
-from app.services.image_processing_service import crop_image
+from app.models.immich import ImmichClient
+from app.services.image_processing_service import crop_image, prepare_image_for_eink
 from app.utils.helpers import human_readable_to_bytes, remove_empty_folders
 
 filename_regex = re.compile(
     r"^([0-9A-Z]{26})_([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})(\....)$"
 )
 
+logging.basicConfig(format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
 
 class ImmichCache:
     def __init__(
@@ -46,15 +49,16 @@ class ImmichCache:
 
     def store(self, immich_uuid: str) -> bool:
         if immich_uuid in self.cache_files:
-            return True
+            return False
         image = self.immich_client.get_image(immich_uuid)
         image = crop_image(image, self.screen_size[0], self.screen_size[1])
         ulid = str(ULID())
-        filename = f"{ulid}_{immich_uuid}.jpg"
+        filename = f"{ulid}_{immich_uuid}.bmp"
         path = os.path.join(self.base_dir, filename)
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-        image.save(path, "jpeg")
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        image = prepare_image_for_eink(image)
+        image.save(path, "BMP")
         file_size = os.stat(path).st_size
         removed_image = self.make_space_for(file_size)
         self.cache_files[immich_uuid] = ImmichCache.Entry(ulid, immich_uuid, path)
@@ -73,7 +77,9 @@ class ImmichCache:
 
     def pop(self) -> Image.Image:
         _, entry = self.cache_files.popitem(False)
+        logger.warning("Loading image")
         image = Image.open(entry.path)
+        logger.warning("Loaded image")
         self.cleanup(entry)
         return image
 
@@ -133,5 +139,6 @@ cache = ImmichCache(
 
 def get_immich_cache():
     yield cache
+
 
 ImmichCacheDep = Annotated[ImmichCache, Depends(get_immich_cache)]
